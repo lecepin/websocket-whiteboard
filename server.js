@@ -1,12 +1,32 @@
 import express from "express";
 import http from "http";
 import WebSocket, { WebSocketServer } from "ws";
+import crypto from 'crypto'
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.static("public"));
+
+
+let aesConfig = {
+  key: crypto.randomBytes(32),
+  iv: crypto.randomBytes(16),
+};
+
+
+setInterval(() => {
+  aesConfig.key = crypto.randomBytes(32);
+  aesConfig.iv = crypto.randomBytes(16);
+}, 3600000);
+
+app.get('/get-ki', (req, res) => {
+  res.json({
+    key: aesConfig.key.toString('hex'),
+    iv: aesConfig.iv.toString('hex')
+  });
+});
 
 wss.on("connection", function connection(ws) {
   const userConnected = {

@@ -2,6 +2,9 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>共享白板</title>
   <style>
     html,
@@ -29,49 +32,9 @@
 <body>
   <h1>共享白板：(<span id="count"></span>)</h1>
   <textarea id="sharedTextarea" rows="10" cols="50"></textarea>
-  <script>
-    var ws = new WebSocket('ws://localhost:8083');
-
-    ws.onmessage = function (event) {
-
-      var message = JSON.parse(event.data);
-
-      console.log('Received message:', message)
-      if (message.type === 'text-update') {
-        var textarea = document.getElementById('sharedTextarea');
-        textarea.focus();
-        textarea.value = message.content;
-        // 更新光标位置
-        textarea.selectionStart = message.selectionStart;
-        textarea.selectionEnd = message.selectionEnd;
-      } else if (message.type === 'user-event') {
-        // 用户连接或断开连接的事件
-        console.log('User event:', message.event, 'Current user count:', message.userCount);
-        document.getElementById('count').innerText = message.userCount + '人在线';
-      }
-    };
-
-    ws.onclose = function () {
-      console.log('WebSocket connection closed');
-      document.getElementById('count').innerText = '已离线';
-    };
-
-    function sendUpdate() {
-      var textarea = document.getElementById('sharedTextarea');
-      var message = {
-        type: 'text-update',
-        content: textarea.value,
-        selectionStart: textarea.selectionStart,
-        selectionEnd: textarea.selectionEnd
-      };
-      ws.send(JSON.stringify(message));
-    }
-
-    document.getElementById('sharedTextarea').addEventListener('input', sendUpdate);
-    document.getElementById('sharedTextarea').addEventListener('mouseup', sendUpdate);
-    document.getElementById('sharedTextarea').addEventListener('keyup', sendUpdate);
-
-  </script>
+  <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/lodash.js/4.17.21/lodash.min.js"
+    crossorigin="anonymous"></script>
+  <script src="./m.js"></script>
 </body>
 
 </html>
